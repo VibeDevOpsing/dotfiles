@@ -1,0 +1,9 @@
+####  SSH settings & bind config  ####
+Host *
+    ServerAliveInterval 5
+    ServerAliveCountMax 2
+    StrictHostKeyChecking yes
+    Compression yes
+    ForwardAgent yes
+    Port 22
+    IdentityFile ~/.ssh/id_ed25519
