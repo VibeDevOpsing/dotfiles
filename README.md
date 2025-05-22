@@ -4,8 +4,8 @@ This repository contains my personal configuration files (dotfiles). It uses [GN
 
 ## Prerequisites
 
-*   **GNU Stow**: You must have `stow` installed. You can find installation instructions on the [GNU Stow website](https://www.gnu.org/software/stow/).
-*   **Git**: For cloning this repository.
+*   **GNU Stow**: You must have `stow` installed. Installation instructions are on the [GNU Stow website](https://www.gnu.org/software/stow/).
+*   **Git**: This is for cloning this repository.
 
 ## Setup
 
@@ -13,8 +13,7 @@ The recommended way to install these dotfiles is by using the provided `setup.sh
 
 1.  **Clone the repository:**
     ```bash
-    git clone <repository_url> ~/.dotfiles 
-    # (Replace <repository_url> with the actual URL of this repository)
+    git clone https://github.com/anatolii-d/dotfiles ~/.dotfiles 
     cd ~/.dotfiles
     ```
 
@@ -27,7 +26,7 @@ The `setup.sh` script will attempt to create symbolic links for all available co
 
 **Important:** If you already have existing configuration files in your home directory (e.g., `~/.bashrc`, `~/.vimrc`), `stow` (and thus `setup.sh`) will typically not overwrite them unless they are already symlinks managed by `stow` from this dotfiles directory. If `stow` finds a conflicting file, it will report an error for that module. Before running `setup.sh`, you should:
     *   **Back up any existing configurations** you want to keep.
-    *   **Move or delete** your old dotfiles if you want them to be replaced by the ones in this repository.
+    *   **Move or delete** your old dotfiles if you want them to replaced by the ones in this repository.
     *   Alternatively, for advanced users, `stow` offers an `--adopt` flag that can be used manually to integrate existing files into the stow package.
 
 ## Available Modules
