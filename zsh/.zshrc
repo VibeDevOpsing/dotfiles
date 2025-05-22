@@ -207,11 +207,10 @@ eval "$(starship init zsh)"
 # fzf
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 # fastfetch
-pokeget random --hide-name | fastfetch -c $HOME/.dots/fastfetch-config-compact.jsonc --logo-padding "2" --logo-padding-top "1" --file-raw -
+pokeget random --hide-name | fastfetch -c $HOME/fastfetch-config-compact.jsonc --logo-padding "2" --logo-padding-top "1" --file-raw -
 
 # Cowway
-cowsay_path='/opt/homebrew/Cellar/cowsay/3.8.4/share/cowsay/cows/'
-alias say='fortune | cowsay  -f "$(ls $cowsay_path | sort -R | head -1)" | lolcat'
+alias say='fortune | cowsay -f $(cowsay -l | tail -n +2 | tr ' ' '\n' | shuf -n 1) | lolcat'
 #say
 
 # vfetch
