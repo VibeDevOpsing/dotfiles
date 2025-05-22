@@ -1,0 +1,104 @@
+[core]
+	packedGitLimit = 512m
+	packedGitWindowSize = 512m
+	editor = vim
+	autocrlf = input
+	filemode = false
+	whitespace = fix
+	excludesfile = /Users/mpbws/.gitignore_global
+[pack]
+	deltaCacheSize = 2047m
+	packSizeLimit = 2047m
+	windowMemory = 2047m
+
+[alias]
+    lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative
+    co = checkout
+    br = branch
+    ci = commit
+    st = status
+    df = diff
+    lgs = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(auto)%d%C(reset)'
+	project-summary = !which onefetch && onefetch
+
+[diff]
+    tool = vimdiff
+[merge]
+    tool = vimdiff
+
+[credential]
+    helper = store
+
+[color]
+    ui = true
+    branch = auto
+    diff = auto
+    status = auto
+    grep = always
+
+[push]
+    default = simple
+[pull]
+    rebase = true
+[commit]
+    gpgSign = false
+[http]
+	sslVerify = false
+	postBuffer = 157286400
+[safe]
+	directory = /Users/mpbws/workdir/fsp-rrq/rrq/arm/mbedtls
+	directory = /Users/mpbws/workdir/fsp-rrq/rrq/arm/littlefs
+	directory = /Users/mpbws/workdir/fsp-rrq/rrq/aws/FreeRTOS_b/FreeRTOS/Source
+	directory = /Users/mpbws/workdir/fsp-rrq/rrq/fsp-rrq-3rd-party
+	directory = /Users/mpbws/workdir/fsp-rrq/rrq/matter/connectedhomeip
+	directory = /Users/mpbws/workdir/fsp-rrq/rrq/freertos/Lab-Project-FreeRTOS-FAT
+	directory = /Users/mpbws/workdir/fsp-rrq/rrq/mcu-tools/MCUboot
+	directory = /Users/mpbws/workdir/fsp-rrq/rrq/renesas/wireless/da14xxx
+	directory = /Users/mpbws/workdir/gitlab/fsp-rrq/rrq/arm/mbedtls
+	directory = /Users/mpbws/workdir/gitlab/fsp-rrq/rrq/arm/littlefs
+	directory = /Users/mpbws/workdir/gitlab/fsp-rrq/rrq/aws/FreeRTOS_b/FreeRTOS/Source
+	directory = /Users/mpbws/workdir/gitlab/fsp-rrq/rrq/fsp-rrq-3rd-party
+	directory = /Users/mpbws/workdir/gitlab/fsp-rrq/rrq/matter/connectedhomeip
+	directory = /Users/mpbws/workdir/gitlab/fsp-rrq/rrq/freertos/Lab-Project-FreeRTOS-FAT
+	directory = /Users/mpbws/workdir/gitlab/fsp-rrq/rrq/mcu-tools/MCUboot
+	directory = /Users/mpbws/workdir/gitlab/fsp-rrq/rrq/renesas/wireless/da14xxx
+	directory = /Users/mpbws/workdir/gitlab/fsp-rrq/rrq/arm/mbedtls
+	directory = /Users/mpbws/workdir/gitlab/fsp-rrq/rrq/arm/littlefs
+	directory = /Users/mpbws/workdir/gitlab/fsp-rrq/rrq/aws/FreeRTOS_b/FreeRTOS/Source
+	directory = /Users/mpbws/workdir/gitlab/fsp-rrq/rrq/fsp-rrq-3rd-party
+	directory = /Users/mpbws/workdir/gitlab/fsp-rrq/rrq/matter/connectedhomeip
+	directory = /Users/mpbws/workdir/gitlab/fsp-rrq/rrq/freertos/Lab-Project-FreeRTOS-FAT
+	directory = /Users/mpbws/workdir/gitlab/fsp-rrq/rrq/mcu-tools/MCUboot
+	directory = /Users/mpbws/workdir/gitlab/fsp-rrq/rrq/renesas/wireless/da14xxx
+	directory = /Users/mpbws/workdir/gitlab/fsp-rrq/rrq/arm/mbedtls
+	directory = /Users/mpbws/workdir/gitlab/fsp-rrq/rrq/arm/littlefs
+	directory = /Users/mpbws/workdir/gitlab/fsp-rrq/rrq/aws/FreeRTOS_b/FreeRTOS/Source
+	directory = /Users/mpbws/workdir/gitlab/fsp-rrq/rrq/fsp-rrq-3rd-party
+	directory = /Users/mpbws/workdir/gitlab/fsp-rrq/rrq/matter/connectedhomeip
+	directory = /Users/mpbws/workdir/gitlab/fsp-rrq/rrq/freertos/Lab-Project-FreeRTOS-FAT
+	directory = /Users/mpbws/workdir/gitlab/fsp-rrq/rrq/mcu-tools/MCUboot
+	directory = /Users/mpbws/workdir/gitlab/fsp-rrq/rrq/renesas/wireless/da14xxx
+	directory = /Users/mpbws/workdir/gitlab/fsp-rrq/rrq/arm/mbedtls
+	directory = /Users/mpbws/workdir/gitlab/fsp-rrq/rrq/arm/littlefs
+	directory = /Users/mpbws/workdir/gitlab/fsp-rrq/rrq/aws/FreeRTOS_b/FreeRTOS/Source
+	directory = /Users/mpbws/workdir/gitlab/fsp-rrq/rrq/fsp-rrq-3rd-party
+	directory = /Users/mpbws/workdir/gitlab/fsp-rrq/rrq/matter/connectedhomeip
+	directory = /Users/mpbws/workdir/gitlab/fsp-rrq/rrq/freertos/Lab-Project-FreeRTOS-FAT
+	directory = /Users/mpbws/workdir/gitlab/fsp-rrq/rrq/mcu-tools/MCUboot
+	directory = /Users/mpbws/workdir/gitlab/fsp-rrq/rrq/renesas/wireless/da14xxx
+	directory = /Users/mpbws/workdir/gitlab/fsp-rrq/rrq/arm/mbedtls
+	directory = /Users/mpbws/workdir/gitlab/fsp-rrq/rrq/arm/littlefs
+	directory = /Users/mpbws/workdir/gitlab/fsp-rrq/rrq/aws/FreeRTOS_b/FreeRTOS/Source
+	directory = /Users/mpbws/workdir/gitlab/fsp-rrq/rrq/fsp-rrq-3rd-party
+	directory = /Users/mpbws/workdir/gitlab/fsp-rrq/rrq/matter/connectedhomeip
+	directory = /Users/mpbws/workdir/gitlab/fsp-rrq/rrq/freertos/Lab-Project-FreeRTOS-FAT
+	directory = /Users/mpbws/workdir/gitlab/fsp-rrq/rrq/mcu-tools/MCUboot
+	directory = /Users/mpbws/workdir/gitlab/fsp-rrq/rrq/renesas/wireless/da14xxx
+	directory = /Users/mpbws/workdir/gitlab/fsp-rrq/rrq/arm/mbedtls
+	directory = /Users/mpbws/workdir/gitlab/fsp-rrq/rrq/arm/littlefs
+	directory = /Users/mpbws/workdir/gitlab/fsp-rrq/rrq/aws/FreeRTOS_b/FreeRTOS/Source
+	directory = /Users/mpbws/workdir/gitlab/fsp-rrq/rrq/fsp-rrq-3rd-party
+	directory = /Users/mpbws/workdir/gitlab/fsp-rrq/rrq/matter/connectedhomeip
+	directory = /Users/mpbws/workdir/gitlab/fsp-rrq/rrq/freertos/Lab-Project-FreeRTOS-FAT
+	directory = /Users/mpbws/workdir/gitlab/fsp-rrq/rrq/mcu-tools/MCUboot
+	directory = /Users/mpbws/workdir/gitlab/fsp-rrq/rrq/renesas/wireless/da14xxx
