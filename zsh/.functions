@@ -1,0 +1,472 @@
+#!/usr/bin/env zsh
+# =============================================================================
+# ZSH Functions
+# =============================================================================
+
+# =============================================================================
+# Directory Navigation
+# =============================================================================
+# Create directory and cd into it
+mkcd() {
+    mkdir -p "$@" && cd "$_"
+}
+
+# Go up X directories
+up() {
+    local d=""
+    limit=$1
+    for ((i=1 ; i <= limit ; i++)); do
+        d=$d/..
+    done
+    d=$(echo $d | sed 's/^\///')
+    cd $d
+}
+
+# Jump to project directory
+proj() {
+    cd $(find ~/projects ~/workspace ~/Documents/projects -maxdepth 2 -type d | fzf)
+}
+
+# =============================================================================
+# File Operations
+# =============================================================================
+# Create a backup of a file
+backup() {
+    if [ -f "$1" ]; then
+        cp "$1" "$1.backup-$(date +%Y%m%d-%H%M%S)"
+        echo "Backup created: $1.backup-$(date +%Y%m%d-%H%M%S)"
+    else
+        echo "File not found: $1"
+    fi
+}
+
+# Extract any archive
+extract() {
+    if [ -f $1 ]; then
+        case $1 in
+            *.tar.bz2)   tar xjf $1     ;;
+            *.tar.gz)    tar xzf $1     ;;
+            *.bz2)       bunzip2 $1     ;;
+            *.rar)       unrar e $1     ;;
+            *.gz)        gunzip $1      ;;
+            *.tar)       tar xf $1      ;;
+            *.tbz2)      tar xjf $1     ;;
+            *.tgz)       tar xzf $1     ;;
+            *.zip)       unzip $1       ;;
+            *.Z)         uncompress $1  ;;
+            *.7z)        7z x $1        ;;
+            *.xz)        unxz $1        ;;
+            *.exe)       cabextract $1  ;;
+            *)           echo "'$1' cannot be extracted via extract()" ;;
+        esac
+    else
+        echo "'$1' is not a valid file"
+    fi
+}
+
+# Create an archive
+compress() {
+    if [ -n "$1" ]; then
+        FILE=$1
+        case $FILE in
+            *.tar.bz2) tar cjf $FILE.tar.bz2 $FILE ;;
+            *.tar.gz)  tar czf $FILE.tar.gz $FILE  ;;
+            *.tgz)     tar czf $FILE.tgz $FILE     ;;
+            *.zip)     zip -r $FILE.zip $FILE       ;;
+            *.rar)     rar a $FILE.rar $FILE        ;;
+            *)         echo "Format not recognized" ;;
+        esac
+    else
+        echo "usage: compress <foo.tar.gz> <files>"
+    fi
+}
+
+# =============================================================================
+# Search Functions
+# =============================================================================
+# Find file by name
+ff() {
+    find . -type f -iname "*$1*" 2>/dev/null | fzf --preview 'bat --color=always {}'
+}
+
+# Find directory by name
+fd() {
+    find . -type d -iname "*$1*" 2>/dev/null | fzf
+}
+
+# Find file containing text (interactive)
+fif() {
+    if [ ! "$#" -gt 0 ]; then
+        echo "Need a string to search for!"
+        return 1
+    fi
+    rg --files-with-matches --no-messages "$1" | \
+        fzf --preview "highlight -O ansi -l {} 2> /dev/null | \
+        rg --colors 'match:bg:yellow' --ignore-case --pretty --context 10 '$1' || \
+        rg --ignore-case --pretty --context 10 '$1' {}"
+}
+
+# Search in history
+fh() {
+    print -z $( ([ -n "$ZSH_NAME" ] && fc -l 1 || history) | fzf +s --tac | sed -E 's/ *[0-9]*\*? *//' | sed -E 's/\\/\\\\/g')
+}
+
+# =============================================================================
+# Git Functions
+# =============================================================================
+# Git commit browser
+fshow() {
+    git log --graph --color=always \
+        --format="%C(auto)%h%d %s %C(black)%C(bold)%cr" "$@" |
+    fzf --ansi --no-sort --reverse --tiebreak=index --bind=ctrl-s:toggle-sort \
+        --bind "ctrl-m:execute:
+            (grep -o '[a-f0-9]\{7\}' | head -1 |
+            xargs -I % sh -c 'git show --color=always % | less -R') << 'FZF-EOF'
+            {}
+FZF-EOF"
+}
+
+# Checkout git branch (including remote branches)
+fbr() {
+    local branches branch
+    branches=$(git branch --all | grep -v HEAD) &&
+    branch=$(echo "$branches" |
+             fzf-tmux -d $(( 2 + $(wc -l <<< "$branches") )) +m) &&
+    git checkout $(echo "$branch" | sed "s/.* //" | sed "s#remotes/[^/]*/##")
+}
+
+# Git log with preview
+flog() {
+    git log --oneline --color=always | \
+        fzf --ansi --preview 'git show --color=always {1}' \
+        --bind 'enter:execute(git show --color=always {1} | less -R)'
+}
+
+# Interactive git status
+fgs() {
+    git status --short | \
+        fzf --multi --ansi --preview 'git diff --color=always {2}' \
+        --bind 'enter:execute(git add {2})'
+}
+
+# =============================================================================
+# Docker Functions
+# =============================================================================
+# Select a docker container to start and attach to
+dsa() {
+    local cid
+    cid=$(docker ps -a | sed 1d | fzf -1 -q "$1" | awk '{print $1}')
+    [ -n "$cid" ] && docker start "$cid" && docker attach "$cid"
+}
+
+# Select a running docker container to stop
+dstop() {
+    local cid
+    cid=$(docker ps | sed 1d | fzf -q "$1" | awk '{print $1}')
+    [ -n "$cid" ] && docker stop "$cid"
+}
+
+# Select a docker container to remove
+drm() {
+    local cid
+    cid=$(docker ps -a | sed 1d | fzf -q "$1" | awk '{print $1}')
+    [ -n "$cid" ] && docker rm "$cid"
+}
+
+# Select a docker image to remove
+drmi() {
+    docker images | sed 1d | fzf -q "$1" --no-sort -m --tac | awk '{ print $3 }' | xargs -r docker rmi
+}
+
+# Docker container shell
+dsh() {
+    local container
+    container=$(docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Image}}" | tail -n +2 | fzf | awk '{print $1}')
+    if [ -n "$container" ]; then
+        docker exec -it "$container" /bin/bash || docker exec -it "$container" /bin/sh
+    fi
+}
+
+# Docker logs
+dlogs() {
+    local container
+    container=$(docker ps -a --format "table {{.Names}}\t{{.Status}}" | tail -n +2 | fzf | awk '{print $1}')
+    [ -n "$container" ] && docker logs -f "$container"
+}
+
+# =============================================================================
+# Process Management
+# =============================================================================
+# Kill process interactively
+fkill() {
+    local pid
+    if [ "$UID" != "0" ]; then
+        pid=$(ps -f -u $UID | sed 1d | fzf -m | awk '{print $2}')
+    else
+        pid=$(ps -ef | sed 1d | fzf -m | awk '{print $2}')
+    fi
+
+    if [ "x$pid" != "x" ]; then
+        echo $pid | xargs kill -${1:-9}
+    fi
+}
+
+# Show process info
+pinfo() {
+    ps aux | fzf --preview 'echo {} | awk "{print \$2}" | xargs -I {} ps -p {} -o pid,vsz=MEMORY,comm'
+}
+
+# =============================================================================
+# Network Functions
+# =============================================================================
+# Get all IP addresses
+ips() {
+    echo "Local IP addresses:"
+    ifconfig | grep "inet " | grep -v 127.0.0.1 | awk '{print $2}'
+    echo ""
+    echo "Public IP address:"
+    curl -s https://checkip.amazonaws.com || curl -s https://ipinfo.io/ip
+}
+
+# Port scan
+portscan() {
+    if [ -z "$1" ]; then
+        echo "Usage: portscan <host>"
+        return 1
+    fi
+    nc -zv $1 1-65535 2>&1 | grep succeeded
+}
+
+# Test port
+testport() {
+    if [ -z "$1" ] || [ -z "$2" ]; then
+        echo "Usage: testport <host> <port>"
+        return 1
+    fi
+    nc -zv $1 $2
+}
+
+# =============================================================================
+# Development Functions
+# =============================================================================
+# Create a Python virtual environment and activate it
+mkvenv() {
+    local venv_name="${1:-venv}"
+    python3 -m venv "$venv_name" && source "$venv_name/bin/activate"
+}
+
+# Run any command in all git repositories under current directory
+git_all() {
+    find . -type d -name .git -execdir sh -c "pwd && $*" \;
+}
+
+# Open project in editor
+proj_open() {
+    local project
+    project=$(find ~/projects ~/workspace -maxdepth 2 -type d | fzf)
+    [ -n "$project" ] && cd "$project" && ${EDITOR:-nvim} .
+}
+
+# Create a new script with shebang and make it executable
+mkscript() {
+    if [ -z "$1" ]; then
+        echo "Usage: mkscript <filename>"
+        return 1
+    fi
+    
+    local filename=$1
+    local extension="${filename##*.}"
+    
+    case $extension in
+        sh)
+            echo '#!/usr/bin/env bash' > "$filename"
+            ;;
+        py)
+            echo '#!/usr/bin/env python3' > "$filename"
+            ;;
+        rb)
+            echo '#!/usr/bin/env ruby' > "$filename"
+            ;;
+        js)
+            echo '#!/usr/bin/env node' > "$filename"
+            ;;
+        *)
+            echo '#!/usr/bin/env bash' > "$filename"
+            ;;
+    esac
+    
+    chmod +x "$filename"
+    ${EDITOR:-nvim} "$filename"
+}
+
+# =============================================================================
+# System Functions
+# =============================================================================
+# System info
+sysinfo() {
+    echo "System Information:"
+    echo "==================="
+    echo "Hostname: $(hostname)"
+    echo "OS: $(uname -s)"
+    echo "Kernel: $(uname -r)"
+    echo "Architecture: $(uname -m)"
+    echo "CPU: $(sysctl -n machdep.cpu.brand_string 2>/dev/null || lscpu | grep 'Model name' | cut -d':' -f2 | xargs)"
+    echo "Memory: $(free -h 2>/dev/null | awk '/^Mem:/ {print $2}' || sysctl -n hw.memsize | awk '{print $0/1024/1024/1024 " GB"}')"
+    echo "Disk: $(df -h / | awk 'NR==2 {print $4 " free of " $2}')"
+    echo "Uptime: $(uptime | sed 's/.*up //' | sed 's/, [0-9]* user.*//')"
+}
+
+# Clean system caches and temp files
+cleanup() {
+    echo "Cleaning system..."
+    
+    # Clean package manager cache
+    if command -v brew &> /dev/null; then
+        echo "Cleaning Homebrew cache..."
+        brew cleanup -s
+    fi
+    
+    if command -v apt-get &> /dev/null; then
+        echo "Cleaning APT cache..."
+        sudo apt-get clean
+        sudo apt-get autoclean
+        sudo apt-get autoremove
+    fi
+    
+    # Clean npm cache
+    if command -v npm &> /dev/null; then
+        echo "Cleaning npm cache..."
+        npm cache clean --force
+    fi
+    
+    # Clean pip cache
+    if command -v pip &> /dev/null; then
+        echo "Cleaning pip cache..."
+        pip cache purge
+    fi
+    
+    # Clean Docker
+    if command -v docker &> /dev/null; then
+        echo "Cleaning Docker..."
+        docker system prune -af --volumes
+    fi
+    
+    # Clean system logs
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        echo "Cleaning macOS logs and caches..."
+        sudo rm -rf /Library/Logs/*
+        sudo rm -rf /System/Library/Caches/*
+        sudo rm -rf /Library/Caches/*
+        rm -rf ~/Library/Caches/*
+        rm -rf ~/Library/Logs/*
+    fi
+    
+    echo "Cleanup complete!"
+}
+
+# =============================================================================
+# Utility Functions
+# =============================================================================
+# Weather
+weather() {
+    local location="${1:-}"
+    curl -s "wttr.in/${location}?format=v2"
+}
+
+# Cheatsheet
+cheat() {
+    if [ -z "$1" ]; then
+        echo "Usage: cheat <command>"
+        return 1
+    fi
+    curl -s "cheat.sh/$1" | less -R
+}
+
+# Dictionary lookup
+define() {
+    if [ -z "$1" ]; then
+        echo "Usage: define <word>"
+        return 1
+    fi
+    curl -s "dict://dict.org/d:$1" | less
+}
+
+# URL shortener
+short() {
+    if [ -z "$1" ]; then
+        echo "Usage: short <url>"
+        return 1
+    fi
+    curl -s "http://tinyurl.com/api-create.php?url=$1"
+}
+
+# QR code generator
+qrcode() {
+    if [ -z "$1" ]; then
+        echo "Usage: qrcode <text>"
+        return 1
+    fi
+    curl -s "qrenco.de/$1"
+}
+
+# =============================================================================
+# macOS Specific Functions
+# =============================================================================
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    # Toggle hidden files in Finder
+    togglehidden() {
+        STATUS=$(defaults read com.apple.finder AppleShowAllFiles)
+        if [ "$STATUS" == "TRUE" ]; then
+            defaults write com.apple.finder AppleShowAllFiles FALSE
+            echo "Hidden files are now hidden"
+        else
+            defaults write com.apple.finder AppleShowAllFiles TRUE
+            echo "Hidden files are now visible"
+        fi
+        killall Finder
+    }
+    
+    # Quick Look preview
+    ql() {
+        qlmanage -p "$@" &>/dev/null
+    }
+    
+    # Empty the Trash on all mounted volumes
+    emptytrash() {
+        sudo rm -rfv /Volumes/*/.Trashes
+        sudo rm -rfv ~/.Trash
+        sudo rm -rfv /private/var/log/asl/*.asl
+        sqlite3 ~/Library/Preferences/com.apple.LaunchServices.QuarantineEventsV* 'delete from LSQuarantineEvent'
+    }
+    
+    # Show/hide desktop icons
+    toggledesktop() {
+        STATUS=$(defaults read com.apple.finder CreateDesktop)
+        if [ "$STATUS" == "true" ]; then
+            defaults write com.apple.finder CreateDesktop false
+            echo "Desktop icons are now hidden"
+        else
+            defaults write com.apple.finder CreateDesktop true
+            echo "Desktop icons are now visible"
+        fi
+        killall Finder
+    }
+fi
+
+# =============================================================================
+# Fun Functions
+# =============================================================================
+# Matrix rain
+matrix() {
+    echo -e "\e[1;40m" ; clear ; while :; do echo $LINES $COLUMNS $(( $RANDOM % $COLUMNS)) $(( $RANDOM % 72 )) ;sleep 0.05; done|awk '{ letters="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()"; c=$4; letter=substr(letters,c,1);a[$3]=0;for (x in a) {o=a[x];a[x]=a[x]+1; printf "\033[%s;%sH\033[2;32m%s",o,x,letter; printf "\033[%s;%sH\033[1;37m%s\033[0;0H",a[x],x,letter;if (a[x] >= $1) { a[x]=0; } }}'
+}
+
+# Random joke
+joke() {
+    curl -s https://icanhazdadjoke.com/ -H "Accept: text/plain"
+}
+
+# Random quote
+quote() {
+    curl -s https://api.quotable.io/random | jq -r '.content + " - " + .author'
+} 

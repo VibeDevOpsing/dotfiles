@@ -1,30 +1,216 @@
+[user]
+    # Set your user information here
+    # name = Your Name
+    # email = your.email@example.com
+
 [core]
-	packedGitLimit = 512m
-	packedGitWindowSize = 512m
-	editor = vim
-	autocrlf = input
-	filemode = false
-	whitespace = fix
-	excludesfile = ~/.gitignore_global
+    # Editor settings
+    editor = nvim
+    autocrlf = input
+    filemode = false
+    whitespace = fix,-indent-with-non-tab,trailing-space,cr-at-eol
+    excludesfile = ~/.gitignore_global
+
+    # Performance settings
+    packedGitLimit = 512m
+    packedGitWindowSize = 512m
+    preloadindex = true
+    fscache = true
+
+    # Better diffs
+    pager = delta
+
 [pack]
-	deltaCacheSize = 2047m
-	packSizeLimit = 2047m
-	windowMemory = 2047m
+    deltaCacheSize = 2047m
+    packSizeLimit = 2047m
+    windowMemory = 2047m
 
 [alias]
-    lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative
-    co = checkout
-    br = branch
-    ci = commit
+    # Status and information
+    s = status -sb
     st = status
-    df = diff
+    ss = status -s
+
+    # Branch management
+    br = branch
+    bra = branch -a
+    brd = branch -d
+    brD = branch -D
+    brm = branch -m
+    brs = branch -r
+
+    # Checkout
+    co = checkout
+    cob = checkout -b
+    com = checkout main || checkout master
+    cod = checkout develop
+
+    # Commit
+    c = commit
+    cm = commit -m
+    ca = commit --amend
+    cam = commit --amend -m
+    can = commit --amend --no-edit
+    cs = commit -S
+    csm = commit -S -m
+
+    # Add/Stage
+    a = add
+    aa = add --all
+    ap = add -p
+    au = add --update
+
+    # Diff
+    d = diff
+    ds = diff --staged
+    dc = diff --cached
+    dw = diff --word-diff
+    dt = difftool
+
+    # Log viewing
+    l = log --oneline --graph --decorate
+    la = log --oneline --graph --decorate --all
+    lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative
     lgs = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(auto)%d%C(reset)'
-	project-summary = !which onefetch && onefetch
+    ll = log --pretty=format:"%C(yellow)%h%Cred%d\\ %Creset%s%Cblue\\ [%cn]" --decorate --numstat
+    ld = log --pretty=format:"%C(yellow)%h\\ %ad%Cred%d\\ %Creset%s%Cblue\\ [%cn]" --decorate --date=relative
+    lf = log --pretty=format:"%C(yellow)%h%Cred%d\\ %Creset%s%Cblue\\ [%cn]" --decorate --numstat --follow
+
+    # Pull/Push
+    pl = pull
+    plr = pull --rebase
+    plra = pull --rebase --autostash
+    ps = push
+    psf = push --force-with-lease
+    psu = push -u origin HEAD
+    pst = push --tags
+
+    # Fetch
+    f = fetch
+    fa = fetch --all
+    fp = fetch --prune
+
+    # Merge
+    m = merge
+    ma = merge --abort
+    mc = merge --continue
+    ms = merge --skip
+
+    # Rebase
+    rb = rebase
+    rbi = rebase -i
+    rbc = rebase --continue
+    rba = rebase --abort
+    rbs = rebase --skip
+    rbm = rebase main || rebase master
+
+    # Reset
+    r = reset
+    rh = reset HEAD
+    rh1 = reset HEAD~1
+    rs = reset --soft
+    rsh = reset --soft HEAD~1
+    rhh = reset --hard
+    rhh1 = reset --hard HEAD~1
+
+    # Stash
+    st = stash
+    sta = stash apply
+    stc = stash clear
+    std = stash drop
+    stl = stash list
+    stp = stash pop
+    sts = stash save
+    stsh = stash show -p
+
+    # Cherry-pick
+    cp = cherry-pick
+    cpa = cherry-pick --abort
+    cpc = cherry-pick --continue
+
+    # Remote
+    re = remote
+    rev = remote -v
+    rea = remote add
+    red = remote remove
+    res = remote set-url
+
+    # Tags
+    t = tag
+    ta = tag -a
+    td = tag -d
+    tl = tag -l
+
+    # Worktree
+    wt = worktree
+    wta = worktree add
+    wtl = worktree list
+    wtm = worktree move
+    wtr = worktree remove
+
+    # Useful shortcuts
+    undo = reset --soft HEAD~1
+    unstage = reset HEAD --
+    last = log -1 HEAD
+    visual = !gitk
+    project-summary = !which onefetch && onefetch
+    contributors = shortlog -sn
+
+    # Show verbose output about tags, branches or remotes
+    tags = tag -l
+    branches = branch -a
+    remotes = remote -v
+
+    # Pretty log aliases
+    hist = log --pretty=format:'%h %ad | %s%d [%an]' --graph --date=short
+    today = log --since=midnight --author='$(git config user.name)' --oneline
+
+    # File history
+    filelog = log -u
+    fl = log -u
+
+    # Find commits by commit message
+    fm = "!f() { git log --pretty=format:'%C(yellow)%h  %Cblue%ad  %Creset%s%Cgreen  [%cn] %Cred%d' --decorate --date=short --grep=$1; }; f"
+
+    # Find commits by source code
+    fc = "!f() { git log --pretty=format:'%C(yellow)%h  %Cblue%ad  %Creset%s%Cgreen  [%cn] %Cred%d' --decorate --date=short -S$1; }; f"
+
+    # List aliases
+    aliases = config --get-regexp alias
+
+    # Amend the last commit with staged changes
+    amend = commit --amend --reuse-message=HEAD
+
+    # Credit an author on the latest commit
+    credit = "!f() { git commit --amend --author \"$1 <$2>\" -C HEAD; }; f"
+
+    # Interactive rebase with the given number of latest commits
+    reb = "!r() { git rebase -i HEAD~$1; }; r"
+
+    # Find branches containing commit
+    fb = "!f() { git branch -a --contains $1; }; f"
+
+    # Find tags containing commit
+    ft = "!f() { git describe --always --contains $1; }; f"
+
+    # Remove branches that have already been merged with main
+    dm = "!git branch --merged | grep -v '\\*' | xargs -n 1 git branch -d"
 
 [diff]
-    tool = vimdiff
+    tool = nvimdiff
+    algorithm = histogram
+    colorMoved = default
+
+[difftool]
+    prompt = false
+
 [merge]
-    tool = vimdiff
+    tool = nvimdiff
+    conflictstyle = diff3
+
+[mergetool]
+    prompt = false
+    keepBackup = false
 
 [credential]
     helper = store
@@ -36,13 +222,72 @@
     status = auto
     grep = always
 
+[color "branch"]
+    current = yellow reverse
+    local = yellow
+    remote = green
+
+[color "diff"]
+    meta = yellow bold
+    frag = magenta bold
+    old = red bold
+    new = green bold
+
+[color "status"]
+    added = green
+    changed = yellow
+    untracked = red
+
 [push]
     default = simple
+    autoSetupRemote = true
+
 [pull]
     rebase = true
+
+[fetch]
+    prune = true
+
+[rebase]
+    autoStash = true
+
 [commit]
     gpgSign = false
+    verbose = true
+
 [http]
-	sslVerify = false
-	postBuffer = 157286400
+    sslVerify = false
+    postBuffer = 157286400
+
+[init]
+    defaultBranch = main
+
+[filter "lfs"]
+    clean = git-lfs clean -- %f
+    smudge = git-lfs smudge -- %f
+    process = git-lfs filter-process
+    required = true
+
 [safe]
+    # Add directories here as needed
+
+[help]
+    autocorrect = 1
+
+[url "git@github.com:"]
+    insteadOf = https://github.com/
+
+[url "git@gitlab.com:"]
+    insteadOf = https://gitlab.com/
+
+[delta]
+    navigate = true
+    line-numbers = true
+    side-by-side = true
+
+[interactive]
+    diffFilter = delta --color-only
+
+[include]
+    # Include local config if it exists
+    path = ~/.gitconfig.local

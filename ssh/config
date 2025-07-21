@@ -1,9 +1,157 @@
-####  SSH settings & bind config  ####
+# =============================================================================
+# SSH Client Configuration
+# =============================================================================
+
+# =============================================================================
+# Global Settings
+# =============================================================================
 Host *
-    ServerAliveInterval 5
-    ServerAliveCountMax 2
+    # Connection settings
+    ServerAliveInterval 60
+    ServerAliveCountMax 3
+    TCPKeepAlive yes
+    
+    # Security settings
     StrictHostKeyChecking yes
+    HashKnownHosts yes
+    PasswordAuthentication no
+    ChallengeResponseAuthentication no
+    PubkeyAuthentication yes
+    HostKeyAlgorithms ssh-ed25519,ssh-rsa
+    
+    # Performance settings
     Compression yes
+    ControlMaster auto
+    ControlPath ~/.ssh/sockets/%r@%h-%p
+    ControlPersist 600
+    
+    # Forwarding settings
     ForwardAgent yes
-    Port 22
+    ForwardX11 no
+    ForwardX11Trusted no
+    
+    # Identity settings
     IdentityFile ~/.ssh/id_ed25519
+    IdentityFile ~/.ssh/id_rsa
+    IdentitiesOnly yes
+    
+    # Other settings
+    SendEnv LANG LC_*
+    LogLevel VERBOSE
+    
+# =============================================================================
+# Host-specific Configurations
+# =============================================================================
+
+# GitHub
+Host github.com
+    Hostname github.com
+    User git
+    IdentityFile ~/.ssh/id_ed25519_github
+    IdentitiesOnly yes
+
+# GitLab
+Host gitlab.com
+    Hostname gitlab.com
+    User git
+    IdentityFile ~/.ssh/id_ed25519_gitlab
+    IdentitiesOnly yes
+
+# Bitbucket
+Host bitbucket.org
+    Hostname bitbucket.org
+    User git
+    IdentityFile ~/.ssh/id_ed25519_bitbucket
+    IdentitiesOnly yes
+
+# =============================================================================
+# Server Templates
+# =============================================================================
+
+# Development servers
+Host dev-*
+    User developer
+    Port 22
+    ForwardAgent yes
+    
+# Production servers
+Host prod-*
+    User admin
+    Port 22
+    ForwardAgent no
+    StrictHostKeyChecking yes
+    
+# Bastion/Jump host
+Host bastion
+    Hostname bastion.example.com
+    User jumpuser
+    Port 22
+    ForwardAgent yes
+    ControlMaster auto
+    ControlPath ~/.ssh/sockets/%r@%h-%p
+    ControlPersist 10m
+
+# =============================================================================
+# Example Host Configurations
+# =============================================================================
+
+# Personal server
+# Host myserver
+#     Hostname server.example.com
+#     User myuser
+#     Port 22
+#     IdentityFile ~/.ssh/id_ed25519_personal
+
+# Work server through bastion
+# Host work-server
+#     Hostname internal.work.com
+#     User workuser
+#     Port 22
+#     ProxyJump bastion
+#     IdentityFile ~/.ssh/id_ed25519_work
+
+# Local VM
+# Host localvm
+#     Hostname 192.168.1.100
+#     User vagrant
+#     Port 22
+#     StrictHostKeyChecking no
+#     UserKnownHostsFile /dev/null
+#     LogLevel ERROR
+
+# =============================================================================
+# Proxy Configuration Examples
+# =============================================================================
+
+# SOCKS proxy
+# Host proxy-server
+#     Hostname proxy.example.com
+#     User proxyuser
+#     DynamicForward 1080
+#     ServerAliveInterval 60
+
+# HTTP proxy
+# Host *.behind-proxy.com
+#     ProxyCommand nc -X connect -x proxy.example.com:8080 %h %p
+
+# =============================================================================
+# Advanced Settings
+# =============================================================================
+
+# Multiplexing socket directory (create if doesn't exist)
+# mkdir -p ~/.ssh/sockets
+
+# For slow connections
+# Host slow-connection
+#     Hostname slow.example.com
+#     User slowuser
+#     Compression yes
+#     CompressionLevel 9
+#     ServerAliveInterval 15
+#     IPQoS throughput
+
+# For fast local network
+# Host *.local
+#     Compression no
+#     ForwardX11 yes
+#     ForwardX11Trusted yes
