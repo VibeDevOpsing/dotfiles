@@ -1,54 +1,267 @@
-# My Dotfiles
+# 🚀 My Dotfiles
 
-This repository contains my personal configuration files (dotfiles). It uses [GNU Stow](https://www.gnu.org/software/stow/) to manage symlinking these files into the correct locations in your home directory.
+A collection of my personal configuration files (dotfiles) for macOS and Linux systems. These dotfiles are managed using GNU Stow for easy installation and management.
 
-## Prerequisites
+## 📋 Table of Contents
 
-*   **GNU Stow**: You must have `stow` installed. Installation instructions are on the [GNU Stow website](https://www.gnu.org/software/stow/).
-*   **Git**: This is for cloning this repository.
+- [Features](#-features)
+- [Prerequisites](#-prerequisites)
+- [Installation](#-installation)
+- [What's Included](#-whats-included)
+- [Customization](#-customization)
+- [Key Bindings & Aliases](#-key-bindings--aliases)
+- [Updating](#-updating)
+- [Troubleshooting](#-troubleshooting)
 
-## Setup
+## ✨ Features
 
-The recommended way to install these dotfiles is by using the provided `setup.sh` script:
+- **Modular Configuration**: Organized by application using GNU Stow
+- **Cross-Platform**: Works on macOS and Linux
+- **Rich Aliases**: 200+ useful aliases for common tasks
+- **Powerful Functions**: 50+ shell functions for productivity
+- **Git Integration**: Comprehensive git aliases and functions
+- **Docker Support**: Extensive Docker and Docker Compose shortcuts
+- **FZF Integration**: Fuzzy finding for files, history, and more
+- **Modern Tools**: Configured for modern CLI tools (eza, bat, ripgrep, etc.)
 
-1.  **Clone the repository:**
-    ```bash
-    git clone https://github.com/anatolii-d/dotfiles ~/.dotfiles 
-    cd ~/.dotfiles
-    ```
+## 📦 Prerequisites
 
-2.  **Run the setup script:**
-    ```bash
-    ./setup.sh
-    ```
+### Required Tools
 
-The `setup.sh` script will attempt to create symbolic links for all available configuration modules.
+```bash
+# Package manager (choose one)
+# macOS
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
-**Important:** If you already have existing configuration files in your home directory (e.g., `~/.bashrc`, `~/.vimrc`), `stow` (and thus `setup.sh`) will typically not overwrite them unless they are already symlinks managed by `stow` from this dotfiles directory. If `stow` finds a conflicting file, it will report an error for that module. Before running `setup.sh`, you should:
-    *   **Back up any existing configurations** you want to keep.
-    *   **Move or delete** your old dotfiles if you want them to replaced by the ones in this repository.
-    *   Alternatively, for advanced users, `stow` offers an `--adopt` flag that can be used manually to integrate existing files into the stow package.
+# Ubuntu/Debian
+sudo apt update && sudo apt install -y curl git
 
-## Available Modules
+# Arch Linux
+sudo pacman -S curl git
+```
 
-The `setup.sh` script manages the following modules:
+### Essential Dependencies
 
-*   `bash`
-*   `fastfetch`
-*   `fzf`
-*   `git`
-*   `ssh`
-*   `vim`
-*   `zsh`
+```bash
+# macOS
+brew install stow zsh git neovim fzf ripgrep eza bat fd zoxide starship
 
-## Manual Stow Usage (Optional)
+# Ubuntu/Debian
+sudo apt install stow zsh git neovim fzf ripgrep exa bat fd-find zoxide
+# Install starship separately
+curl -sS https://starship.rs/install.sh | sh
 
-While `setup.sh` is recommended, you can also manage individual modules manually using `stow` commands from the root of this repository (e.g., `~/.dotfiles`):
+# Arch Linux
+sudo pacman -S stow zsh git neovim fzf ripgrep eza bat fd zoxide starship
+```
 
-*   To stow a module: `stow <module_name>` (e.g., `stow vim`)
-*   To unstow (remove symlinks for) a module: `stow -D <module_name>` (e.g., `stow -D vim`)
-*   To restow (update links for) a module: `stow -R <module_name>` (e.g., `stow -R vim`)
+### Optional Dependencies
 
-Using `setup.sh` effectively runs `stow -R <module_name>` for all modules.
+```bash
+# Development tools
+brew install node python3 go rust docker docker-compose kubectl helm terraform
 
-#dotfiles #unix #macos #linux
+# Additional CLI tools
+brew install htop bottom lazygit lazydocker jq yq tree tldr ncdu duf
+brew install cowsay fortune lolcat cmatrix asciiquarium
+
+# macOS specific
+brew install --cask iterm2 rectangle alfred
+```
+
+## 🛠️ Installation
+
+### Quick Install
+
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/dotfiles.git ~/dotfiles
+cd ~/dotfiles
+
+# Run the setup script
+./setup.sh
+```
+
+### Manual Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/dotfiles.git ~/dotfiles
+cd ~/dotfiles
+
+# Install individual configurations
+stow zsh       # ZSH configuration
+stow git       # Git configuration
+stow vim       # Vim configuration
+stow fzf       # FZF configuration
+stow ssh       # SSH configuration
+stow bash      # Bash configuration (backup)
+stow fastfetch # Fastfetch configuration
+```
+
+## 📁 What's Included
+
+### ZSH Configuration (`zsh/`)
+- `.zshrc` - Main ZSH configuration with organized sections
+- `.aliases` - 200+ command aliases organized by category
+- `.functions` - 50+ useful shell functions
+- `.zprofile` - ZSH profile settings
+- `.zshenv` - ZSH environment variables
+
+### Git Configuration (`git/`)
+- `.gitconfig` - Comprehensive git configuration with 100+ aliases
+- `.gitignore_global` - Global gitignore patterns
+
+### Vim Configuration (`vim/`)
+- `.vimrc` - Vim configuration with plugins and settings
+- `.viminfo` - Vim history and registers
+
+### Other Configurations
+- `fzf/` - FZF fuzzy finder settings
+- `ssh/` - SSH client configuration
+- `bash/` - Bash configuration (as fallback)
+- `fastfetch/` - System information display configuration
+
+## 🎨 Customization
+
+### Local Overrides
+
+The configuration supports local overrides that won't be tracked by git:
+
+```bash
+# ZSH local configuration
+~/.zshrc.local
+
+# Git local configuration
+~/.gitconfig.local
+
+# Local aliases
+~/.aliases.local
+
+# Local functions
+~/.functions.local
+```
+
+### Environment Variables
+
+Key environment variables you can customize:
+
+```bash
+# Editor preference
+export EDITOR='nvim'
+export VISUAL='nvim'
+
+# Development paths
+export WORKSPACE="$HOME/workspace"
+export PROJECTS="$HOME/projects"
+```
+
+## ⌨️ Key Bindings & Aliases
+
+### Navigation Aliases
+- `..` - Go up one directory
+- `...` - Go up two directories
+- `....` - Go up three directories
+- `l` - Detailed list with icons
+- `ll` - List with details
+- `la` - List all files
+- `lt` - Tree view (2 levels)
+
+### Git Aliases
+- `gs` - Git status
+- `ga` - Git add
+- `gc` - Git commit
+- `gph` - Git push
+- `gpl` - Git pull
+- `gl` - Git log (pretty)
+- `gd` - Git diff
+
+### Docker Aliases
+- `d` - Docker
+- `dc` - Docker compose
+- `dps` - Docker ps (formatted)
+- `dcu` - Docker compose up
+- `dcd` - Docker compose down
+- `dlogs` - Docker logs
+
+### Useful Functions
+- `mkcd <dir>` - Create directory and cd into it
+- `extract <file>` - Extract any archive
+- `backup <file>` - Create timestamped backup
+- `fkill` - Interactive process killer
+- `weather [location]` - Get weather info
+- `cheat <command>` - Get command cheatsheet
+
+## 🔄 Updating
+
+### Update Dotfiles
+
+```bash
+cd ~/dotfiles
+git pull
+./setup.sh
+```
+
+### Update Dependencies
+
+```bash
+# macOS
+brew update && brew upgrade
+
+# Ubuntu/Debian
+sudo apt update && sudo apt upgrade
+
+# Update Oh My Zsh
+omz update
+```
+
+## 🐛 Troubleshooting
+
+### Common Issues
+
+1. **Stow conflicts**: Remove existing files before stowing
+   ```bash
+   rm ~/.zshrc
+   stow zsh
+   ```
+
+2. **Missing commands**: Install missing dependencies
+   ```bash
+   # Check if command exists
+   command -v eza || brew install eza
+   ```
+
+3. **Slow shell startup**: Profile your startup
+   ```bash
+   zsh -xvs
+   ```
+
+4. **Plugin errors**: Update Oh My Zsh plugins
+   ```bash
+   omz update
+   ```
+
+### Debug Mode
+
+Enable debug mode in ZSH:
+```bash
+# Add to ~/.zshrc.local
+setopt XTRACE VERBOSE
+```
+
+## 📝 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🤝 Contributing
+
+Feel free to fork this repository and customize it for your own use. If you have suggestions for improvements, please open an issue or submit a pull request.
+
+## 📞 Contact
+
+- GitHub: [@yourusername](https://github.com/yourusername)
+- Email: your.email@example.com
+
+---
+
+⭐ If you find this helpful, please consider giving it a star!
